@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.dao.CheckItemDao">
+    <insert id="add" parameterType="checkitem">
+        INSERT INTO `t_checkitem`
+        (`code`, `name`, `sex`, `age`, `price`, `type`, `attention`, `remark`)
+         VALUES (#{code},#{name} , #{sex}, #{age}, #{price}, #{type}, #{attention}, #{remark})
+    </insert>
+
+    <select id="findByCondition" parameterType="string" resultType="checkItem">
+        select * from t_checkitem
+        <where>
+            <if test="value != null and value.length > 0">
+                code = #{value} or name = #{value}
+            </if>
+        </where>
+    </select>
+
+    <select id="findById" parameterType="int" resultType="checkitem">
+        select * from t_checkitem where id = #{id}
+    </select>
+
+    <update id="edit" parameterType="checkitem">
+         UPDATE `t_checkitem`
+                SET
+                `code`=#{code},
+                `name`=#{name},
+                `sex`=#{sex},
+                `age`=#{age},
+                `price`=#{price},
+                `type`=#{type},
+                `attention`=#{attention},
+                `remark`=#{remark}
+                WHERE (`id`=#{id})
+    </update>
+
+    <select id="findCountById" parameterType="int" resultType="long">
+          select count(0) from t_checkgroup_checkitem where checkitem_id = #{id}
+    </select>
+
+    <delete id="delById" parameterType="int">
+          delete from t_checkitem where id = #{id}
+    </delete>
+
+    <select id="findAll" resultType="checkitem">
+          select * from t_checkitem
+    </select>
+
+    <select id="findCheckItemsByCheckGroupId" parameterType="int" resultType="checkitem">
+        select * from t_checkitem where id in
+        (select checkitem_id from t_checkgroup_checkitem where checkgroup_id = #{checkGroupId})
+    </select>
+</mapper>
