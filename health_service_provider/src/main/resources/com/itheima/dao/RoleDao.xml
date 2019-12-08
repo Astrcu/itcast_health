@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.dao.RoleDao">
+
+    <resultMap id="baseMap" type="role">
+        <id column="id" property="id"></id>
+        <result column="name" property="name"></result>
+        <result column="keyword" property="keyword"></result>
+        <result column="description" property="description"></result>
+    </resultMap>
+
+    <resultMap id="findRolesByUserIdMap" type="role" extends="baseMap">
+        <collection
+                property="permissions"
+                column="id"
+                ofType="permission"
+                select="com.itheima.dao.PermissionDao.findPermissionByRoleId"></collection>
+    </resultMap>
+    
+    <select id="findRolesByUserId" parameterType="int" resultMap="findRolesByUserIdMap">
+        SELECT * FROM t_role WHERE id IN (SELECT role_id FROM t_user_role WHERE user_id = #{userId})
+    </select>
+
+    <select id="findAll" resultType="role">
+        select * from t_role
+    </select>
+
+    <select id="findByCondition" parameterType="string" resultType="role">
+        select * from t_role
+        <where>
+            <if test="value!=null and value.length>0">
+                name like "%"#{value}"%" or keyword like "%"#{value}"%"
+            </if>
+        </where>
+    </select>
+
+    <select id="findById" parameterType="int" resultType="permission">
+        select * from t_role where id=#{id}
+    </select>
+
+    <select id="findMenuIdsById" parameterType="int" resultType="int">
+        select menu_id from t_role_menu where role_id = #{id}
+    </select>
+
+    <select id="findPermissionIdsById" parameterType="int" resultType="int">
+        select permission_id from t_role_permission where role_id = #{id}
+    </select>
+
+    <insert id="add" parameterType="role" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into t_role (name, keyword, description) values (#{name},#{keyword},#{description})
+    </insert>
+
+    <insert id="setPermission">
+        insert into t_role_permission (role_id, permission_id) values (#{roleId},#{permissionId})
+    </insert>
+    <insert id="setMenu">
+        insert into t_role_menu (role_id, menu_id) values (#{roleId},#{menuId})
+    </insert>
+    
+    <update id="edit" parameterType="role">
+        update t_role set
+         name = #{name},
+         keyword = #{keyword},
+         description = #{description}
+         where id = #{id}
+    </update>
+
+    <delete id="delRelationPermission" parameterType="int">
+        delete from t_role_permission where role_id = #{id}
+    </delete>
+
+    <delete id="delRelationMenu" parameterType="int">
+        delete from t_role_menu where role_id = #{id}
+    </delete>
+</mapper>

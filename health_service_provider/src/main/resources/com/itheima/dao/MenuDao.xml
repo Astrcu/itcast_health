@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.dao.MenuDao">
+    <select id="findByCondition" parameterType="string" resultType="menu">
+        select * from t_menu
+        <where>
+            <if test="value!=null and value.length>0">
+                name like "%"#{value}"%"
+            </if>
+        </where>
+    </select>
+
+    <insert id="add" parameterType="menu" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        insert into t_menu(name,linkUrl,path,parentMenuId,priority,level) values(#{name},#{linkUrl},#{path},#{parentMenuId},#{priority},#{level})
+    </insert>
+
+    <update id="edit" parameterType="menu">
+        update t_menu set
+            name = #{name},
+            linkUrl = #{linkUrl},
+            path = #{path},
+            parentMenuId = #{parentMenuId},
+            priority = #{priority},
+            level = #{level}
+            where
+            id = #{id}
+    </update>
+
+    <select id="findById" parameterType="int" resultType="menu">
+        select * from t_menu where id = #{id}
+    </select>
+
+    <select id="findCountById" parameterType="int" resultType="long">
+        select count(0) from t_role_menu where menu_id = #{id}
+    </select>
+
+    <delete id="delById" parameterType="int">
+        delete from t_menu where id = #{id}
+    </delete>
+
+    <select id="findAllMenu" resultType="menu">
+        select * from t_menu
+    </select>
+
+    <select id="findMenuByUsername" parameterType="string" resultType="menu">
+         select * from t_menu m where id in
+                (select  menu_id from t_role_menu where role_id =
+                    (select role_id from t_user u,t_user_role ur where u.id = ur.user_id and u.username = #{username}))
+            and level = 1;
+
+    </select>
+
+    <select id="findMenuByParentId" resultType="menu">
+         select * from t_menu where id in
+                (select menu_id from t_role_menu where role_id =
+                    (select role_id from t_user u,t_user_role ur where u.id = ur.user_id and u.username = #{param1}))
+            and parentMenuId = #{param2}
+            and level = 2 ORDER BY priority;
+    </select>
+</mapper>

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- 页面meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>传智健康</title>
+    <meta name="description" content="传智健康">
+    <meta name="keywords" content="传智健康">
+    <meta content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" name="viewport">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="../css/style.css">
+    <!--<script src="../plugins/echarts/echarts.js"></script>-->
+    <!--<link rel="stylesheet" href="../plugins/elementui/index.css">-->
+
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+
+</head>
+<body class="hold-transition">
+<div id="add">
+
+    <div class="content-header">
+        <h1>统计分析
+            <small>分段会员数量</small>
+        </h1>
+        <el-breadcrumb separator-class="el-icon-arrow-right" class="breadcrumb">
+            <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
+            <el-breadcrumb-item>统计分析</el-breadcrumb-item>
+            <el-breadcrumb-item>分段会员数量</el-breadcrumb-item>
+        </el-breadcrumb>
+    </div>
+    <div class="block">
+        <!--<span class="demonstration"></span>-->
+        <el-date-picker
+                v-model="value1"
+                type="monthrange"
+                range-separator="至"
+                start-placeholder="开始月份"
+                end-placeholder="结束月份">
+        </el-date-picker>
+        <!--<el-button  class="dalfBut"  icon="el-icon-search">确定</el-button>-->
+        <el-button @click="handleApp(value1)" type="primary">确定</el-button>
+
+
+    </div>
+    <div class="app-container">
+        <div class="box">
+            <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
+            <div id="chart1" style="height:400px;"></div>
+        </div>
+    </div>
+</div>
+</body>
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<!-- 引入组件库 -->
+<!--<script src="../js/vue.js"></script>-->
+<script src="../js/axios-0.18.0.js"></script>
+<!-- 引入组件库 -->
+
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<!--<script src="../plugins/elementui/index.js"></script>-->
+<script src="../js/echarts.js"></script>
+<script>
+    new Vue({
+        el: "#add",
+        created() {
+            this.showData();
+        },
+        data: {
+            input: "",
+            value: [],
+            value1: ""
+        },
+        methods: {
+            handleApp(value1) {
+                // alert(value1);
+                axios.post("http://localhost:82/report/getDate.do", this.value1).then((res) => {
+                    console.log(value1);
+                    var myChart1 = echarts.init(document.getElementById('chart1'));
+                    myChart1.setOption({
+                        title: {
+                            text: '会员数量',
+                        },
+                        tooltip: {
+                            trigger: 'axis'
+                        },
+                        legend: {
+                            data: ['会员数量']
+                        },
+                        toolbox: {
+                            show: true,
+                            feature: {
+                                dataZoom: {
+                                    yAxisIndex: 'none'
+                                },
+                                dataView: {readOnly: false},
+                                magicType: {type: ['line', 'bar']},
+                                restore: {},
+                                saveAsImage: {}
+                            }
+                        },
+                        xAxis: {
+                            type: 'category',
+                            boundaryGap: false,
+                            data: res.data.data.months
+                        },
+                        yAxis: {
+                            type: 'value',
+                        },
+                        series: [
+                            {
+                                name: '会员数量',
+                                type: 'line',
+                                data: res.data.data.memberCount,
+                                markPoint: {
+                                    data: [
+                                        {type: 'min', name: '最小值'}
+                                    ]
+                                },
+                            },
+                        ]
+                    })
+                })
+            },
+            showData() {
+                axios.get("http://localhost:82/report/getMemberReport.do").then((res) => {
+                    console.log(res);
+                    var myChart2 = echarts.init(document.getElementById('chart1'));
+                    myChart2.setOption({
+                        title: {
+                            text: '会员数量',
+                        },
+                        tooltip: {
+                            trigger: 'axis'
+                        },
+                        legend: {
+                            data: ['会员数量']
+                        },
+                        toolbox: {
+                            show: true,
+                            feature: {
+                                dataZoom: {
+                                    yAxisIndex: 'none'
+                                },
+                                dataView: {readOnly: false},
+                                magicType: {type: ['line', 'bar']},
+                                restore: {},
+                                saveAsImage: {}
+                            }
+                        },
+                        xAxis: {
+                            type: 'category',
+                            boundaryGap: false,
+                            data: res.data.data.months
+                        },
+                        yAxis: {
+                            type: 'value',
+                        },
+                        series: [
+                            {
+                                name: '会员数量',
+                                type: 'line',
+                                data: res.data.data.memberCount,
+                            },
+                        ]
+                    });
+                })
+            }
+        }
+    })
+</script>
+
+</html>

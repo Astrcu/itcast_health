@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:security="http://www.springframework.org/schema/security"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/security
+       http://www.springframework.org/schema/security/spring-security.xsd">
+
+    <!--授权-->
+    <!--配置资源不拦截-->
+    <security:http pattern="/favicon.ico" security="none"/>
+    <security:http auto-config="true" use-expressions="true">
+        <!--配置自定义登录界面-->
+        <security:form-login
+                login-page="http://localhost:83/login.html"
+                login-processing-url="/login.do"
+                authentication-success-forward-url="/user/doSuccess.do"
+                authentication-failure-forward-url="/user/doFail.do"></security:form-login>
+
+        <!--关闭跨站请求伪造-->
+        <security:csrf disabled="true"></security:csrf>
+
+        <!--配置退出界面-->
+        <!--前端发来的、logout.do-->
+        <security:logout invalidate-session="true" logout-url="/logout.do" logout-success-url="http://localhost:83/login.html"></security:logout>
+    </security:http>
+
+
+    <bean id="userDetailsService" class="com.itheima.security.SecurityConfigUserService"></bean>
+    <!--认证-->
+    <security:authentication-manager>
+        <security:authentication-provider user-service-ref="userDetailsService">
+            <security:password-encoder ref="passwordEncoder"></security:password-encoder>
+        </security:authentication-provider>
+    </security:authentication-manager>
+
+    <!--开启注解方式权限控制-->
+    <security:global-method-security pre-post-annotations="enabled"></security:global-method-security>
+    <!--安全框架中的默认加密工具类-->
+    <bean id="passwordEncoder" class="org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder"></bean>
+</beans>

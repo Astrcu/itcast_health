@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.dao.SetMealDao">
+    <insert id="add" parameterType="setMeal" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        INSERT INTO `t_setmeal`
+        (`name`, `code`, `helpCode`, `sex`, `age`, `price`, `remark`, `attention`, `img`)
+        VALUES
+        (#{name}, #{code}, #{helpCode}, #{sex}, #{age}, #{price}, #{remark}, #{attention}, #{img})
+    </insert>
+
+    <insert id="set">
+        INSERT INTO `t_setmeal_checkgroup` ( `checkgroup_id`,`setmeal_id`) VALUES (#{param1}, #{param2})
+    </insert>
+
+    <select id="findByCondition" resultType="setMeal" parameterType="string">
+        select * from t_setmeal
+        <where>
+            <if test="value!=null and value.length>0">
+                code like "%"#{value}"%" or name like "%"#{value}"%" or helpCode like "%"#{value}"%"
+            </if>
+        </where>
+    </select>
+
+    <select id="getSetMeal" resultType="setMeal">
+        select * from t_setmeal
+    </select>
+
+    <select id="findDetailsById" parameterType="int" resultMap="findDetailsByIdMap">
+        select * from t_setmeal where id = #{id}
+
+    </select>
+    <resultMap id="findDetailsByIdMap" type="setMeal">
+        <id property="id" column="id"/>
+        <result column="name" property="name"/>
+        <result column="code" property="code"/>
+        <result column="helpCode" property="helpCode"/>
+        <result column="sex" property="sex"/>
+        <result column="age" property="age"/>
+        <result column="price" property="price"/>
+        <result column="remark" property="remark"/>
+        <result column="attention" property="attention"/>
+        <result column="img" property="img"/>
+        <collection property="checkGroups" column="id" ofType="checkGroup"
+                    select="com.itheima.dao.CheckGroupDao.findCheckGroupsBySetmealId"/>
+    </resultMap>
+
+    <select id="findById" parameterType="int" resultType="setMeal">
+        select * from t_setmeal where id = #{id}
+    </select>
+
+    <select id="getSetmealReport" resultType="java.util.Map">
+        SELECT COUNT(o.id) value,s.name name
+        FROM t_setmeal s LEFT JOIN t_order o
+        ON s.id = o.setmeal_id GROUP BY s.id
+    </select>
+
+    <select id="getHotSetmeal" resultType="java.util.Map">
+        select
+            count(o.id) setmeal_count,
+            s.name name,
+            COUNT(0)/(SELECT COUNT(0) FROM t_order) proportion
+        from t_order o RIGHT JOIN t_setmeal s
+            on s.id=o.setmeal_id
+            GROUP by s.id
+            order by count(o.id) desc
+            limit 3
+    </select>
+</mapper>

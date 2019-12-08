@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.itheima.dao.MemberDao">
+    <select id="findByTel" parameterType="string" resultType="member" >
+        select * from t_member where phoneNumber = #{telephone}
+    </select>
+
+    <insert id="add" parameterType="member" useGeneratedKeys="true" keyColumn="id" keyProperty="id">
+        INSERT INTO `t_member`
+        (`fileNumber`, `name`, `sex`, `idCard`, `phoneNumber`, `regTime`, `password`, `email`, `birthday`, `remark`)
+        VALUES (#{fileNumber}, #{name}, #{sex}, #{idCard}, #{phoneNumber}, #{regTime}, #{password}, #{email}, #{birthday}, #{remark})
+    </insert>
+
+    <select id="findCountByMonth" parameterType="string" resultType="java.lang.Long">
+        select count(0) from t_member where regTime &lt;=#{month}
+    </select>
+
+    <select id="findTodayNewMember" parameterType="string" resultType="java.lang.Long">
+        select count(0) from t_member where regTime = #{todayDate}
+    </select>
+    
+    <select id="findTotalCount" resultType="java.lang.Long">
+        select count(0) from t_member
+    </select>
+    
+    <select id="findCountByAfterDate" parameterType="string" resultType="java.lang.Long">
+        select count(0) from t_member where regTime &gt;=#{date}
+    </select>
+    <select id="getMemberByAge" resultType="string">
+        select birthday from t_member where birthday is not null
+    </select>
+    <select id="getMemberBySex" resultType="map">
+        select sex name,count(sex) value from t_member group by sex having sex is not null
+    </select>
+</mapper>
