@@ -46,7 +46,7 @@
         <jedis.version>2.9.0</jedis.version>
         <log4j.version>1.2.17</log4j.version>
         <slf4j.version>1.7.25</slf4j.version>
-        <quartz-scheduler.version>2.2.1</quartz-scheduler.version>
+        <quartz-scheduler.version>2.3.2</quartz-scheduler.version>
         <spring-context-support.version>5.0.5.RELEASE</spring-context-support.version>
         <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
         <aliyun-java-sdk-core.version>4.0.3</aliyun-java-sdk-core.version>
