@@ -51,7 +51,7 @@
         <javax.servlet-api.version>3.1.0</javax.servlet-api.version>
         <aliyun-java-sdk-core.version>4.0.3</aliyun-java-sdk-core.version>
         <aliyun-java-sdk-dysmsapi.version>1.1.0</aliyun-java-sdk-dysmsapi.version>
-        <spring.security.version>5.0.5.RELEASE</spring.security.version>
+        <spring.security.version>5.2.10.RELEASE</spring.security.version>
     </properties>
 
     <dependencyManagement>
